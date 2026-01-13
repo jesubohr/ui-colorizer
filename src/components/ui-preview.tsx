@@ -1,11 +1,26 @@
 import { tailwindPalette } from "@/lib/palette"
+import type { ColorScale } from "@/types"
 
-export default function UIPreview({ baseColor }: { baseColor: string }) {
-  const colors = tailwindPalette(baseColor)
-  const primary500 = colors[5]
-  const primary600 = colors[6]
-  const primary100 = colors[1]
-  const primary700 = colors[7]
+export default function UIPreview({ colorScales }: { colorScales: ColorScale[] }) {
+  const primaryScale = colorScales[0]
+  const secondaryScale = colorScales[1] || primaryScale
+  const accentScale = colorScales[2] || secondaryScale
+
+  const primaryColors = tailwindPalette(primaryScale.baseColor)
+  const secondaryColors = tailwindPalette(secondaryScale.baseColor)
+  const accentColors = tailwindPalette(accentScale.baseColor)
+
+  const p500 = primaryColors[5]
+  const p600 = primaryColors[6]
+  const p100 = primaryColors[1]
+  const p700 = primaryColors[7]
+
+  const s100 = secondaryColors[1]
+  const s700 = secondaryColors[7]
+
+  const a500 = accentColors[5]
+  const a100 = accentColors[1]
+  const a700 = accentColors[7]
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-neutral-200">
@@ -14,30 +29,32 @@ export default function UIPreview({ baseColor }: { baseColor: string }) {
       <div className="space-y-8">
         {/* Buttons */}
         <div>
-          <h3 className="text-sm font-medium text-neutral-500 mb-3">Buttons</h3>
+          <h3 className="text-sm font-medium text-neutral-500 mb-3">
+            Buttons ({primaryScale.name} & {secondaryScale.name})
+          </h3>
           <div className="flex flex-wrap gap-3">
             <button
               className="px-5 py-2.5 rounded-xl font-medium text-white transition-colors"
-              style={{ backgroundColor: primary500 }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = primary600)}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = primary500)}
+              style={{ backgroundColor: p500 }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = p600)}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = p500)}
             >
-              Primary Button
+              {primaryScale.name} Button
             </button>
             <button
               className="px-5 py-2.5 rounded-xl font-medium transition-colors"
               style={{
-                backgroundColor: primary100,
-                color: primary700,
+                backgroundColor: s100,
+                color: s700,
               }}
             >
-              Secondary Button
+              {secondaryScale.name} Button
             </button>
             <button
               className="px-5 py-2.5 rounded-xl font-medium border-2 transition-colors"
               style={{
-                borderColor: primary500,
-                color: primary500,
+                borderColor: p500,
+                color: p500,
               }}
             >
               Outline Button
@@ -47,15 +64,15 @@ export default function UIPreview({ baseColor }: { baseColor: string }) {
 
         {/* Badges */}
         <div>
-          <h3 className="text-sm font-medium text-neutral-500 mb-3">Badges</h3>
+          <h3 className="text-sm font-medium text-neutral-500 mb-3">Badges ({accentScale.name})</h3>
           <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: primary100, color: primary700 }}>
+            <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: a100, color: a700 }}>
               Default
             </span>
-            <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{ backgroundColor: primary500 }}>
+            <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{ backgroundColor: a500 }}>
               Filled
             </span>
-            <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{ borderColor: primary500, color: primary500 }}>
+            <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{ borderColor: a500, color: a500 }}>
               Outline
             </span>
           </div>
@@ -63,19 +80,19 @@ export default function UIPreview({ baseColor }: { baseColor: string }) {
 
         {/* Card */}
         <div>
-          <h3 className="text-sm font-medium text-neutral-500 mb-3">Card</h3>
+          <h3 className="text-sm font-medium text-neutral-500 mb-3">Card ({primaryScale.name})</h3>
           <div
             className="p-5 rounded-xl border-l-4"
             style={{
-              backgroundColor: primary100,
-              borderLeftColor: primary500,
+              backgroundColor: p100,
+              borderLeftColor: p500,
             }}
           >
-            <h4 className="font-semibold mb-1" style={{ color: primary700 }}>
+            <h4 className="font-semibold mb-1" style={{ color: p700 }}>
               Feature Highlight
             </h4>
-            <p className="text-sm" style={{ color: primary600 }}>
-              This card showcases how your color palette works in context with real UI components.
+            <p className="text-sm" style={{ color: p600 }}>
+              This card showcases how your {primaryScale.name} palette works in context with real UI components.
             </p>
           </div>
         </div>
@@ -88,7 +105,7 @@ export default function UIPreview({ baseColor }: { baseColor: string }) {
             placeholder="Type something..."
             className="w-full max-w-sm px-4 py-3 rounded-xl border-2 transition-colors focus:outline-none"
             style={{
-              borderColor: primary500,
+              borderColor: p500,
             }}
           />
         </div>

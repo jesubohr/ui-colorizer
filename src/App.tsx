@@ -61,9 +61,6 @@ function App() {
     }
   }
 
-  // Use the first color scale for UI preview
-  const primaryScale = colorScales[0]
-
   return (
     <main className="w-full min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
       <Toast message={toast.message} visible={toast.visible} />
@@ -138,7 +135,7 @@ function App() {
               />
             ))}
 
-            <UIPreview baseColor={primaryScale.baseColor} />
+            <UIPreview colorScales={colorScales} />
           </div>
         </div>
       </div>
