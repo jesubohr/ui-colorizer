@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import {
-  contrastTone,
-  tailwindPalette,
-  getClosestColorName,
-} from "./palette-jesus";
+import { contrastTone, tailwindPalette } from "./palette-jesus";
 import { getRandomHexColor, isValidHexColor } from "./utils";
+
+// Types
+interface ColorScale {
+  id: string;
+  name: string;
+  baseColor: string;
+}
 
 // Toast notification component
 function Toast({ message, visible }: { message: string; visible: boolean }) {
@@ -23,8 +26,25 @@ function Toast({ message, visible }: { message: string; visible: boolean }) {
   );
 }
 
+// Helper to generate unique IDs
+function generateId(): string {
+  return Math.random().toString(36).substring(2, 9);
+}
+
+// Helper to create a new color scale
+function createColorScale(baseColor?: string): ColorScale {
+  const color = baseColor || getRandomHexColor();
+  return {
+    id: generateId(),
+    name: "Primary",
+    baseColor: color,
+  };
+}
+
 function App() {
-  const [baseColor, setBaseColor] = useState(getRandomHexColor());
+  const [colorScales, setColorScales] = useState<ColorScale[]>([
+    createColorScale(),
+  ]);
   const [toast, setToast] = useState({ message: "", visible: false });
 
   const showToast = useCallback((message: string) => {
@@ -32,17 +52,75 @@ function App() {
     setTimeout(() => setToast((t) => ({ ...t, visible: false })), 2000);
   }, []);
 
-  // Spacebar to generate random color
+  // Spacebar to generate random color for the first (primary) scale
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space" && e.target === document.body) {
         e.preventDefault();
-        setBaseColor(getRandomHexColor());
+        setColorScales((scales) =>
+          scales.map((scale, index) =>
+            index === 0 ? { ...scale, baseColor: getRandomHexColor() } : scale
+          )
+        );
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  const handleColorChange = (id: string, newColor: string) => {
+    setColorScales((scales) =>
+      scales.map((scale) =>
+        scale.id === id ? { ...scale, baseColor: newColor } : scale
+      )
+    );
+  };
+
+  const handleNameChange = (id: string, newName: string) => {
+    setColorScales((scales) =>
+      scales.map((scale) =>
+        scale.id === id ? { ...scale, name: newName } : scale
+      )
+    );
+  };
+
+  const handleGenerateRandom = (id: string) => {
+    setColorScales((scales) =>
+      scales.map((scale) =>
+        scale.id === id ? { ...scale, baseColor: getRandomHexColor() } : scale
+      )
+    );
+  };
+
+  const handleAddColorScale = () => {
+    const scaleNames = [
+      "Secondary",
+      "Tertiary",
+      "Accent",
+      "Neutral",
+      "Success",
+      "Warning",
+      "Error",
+    ];
+    const usedNames = new Set(colorScales.map((s) => s.name));
+    const nextName =
+      scaleNames.find((n) => !usedNames.has(n)) ||
+      `Custom ${colorScales.length + 1}`;
+
+    setColorScales((scales) => [
+      ...scales,
+      { ...createColorScale(), name: nextName },
+    ]);
+  };
+
+  const handleRemoveColorScale = (id: string) => {
+    if (colorScales.length > 1) {
+      setColorScales((scales) => scales.filter((scale) => scale.id !== id));
+    }
+  };
+
+  // Use the first color scale for UI preview
+  const primaryScale = colorScales[0];
 
   return (
     <main className="w-full min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
@@ -66,14 +144,78 @@ function App() {
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Sidebar */}
           <aside className="lg:w-80 shrink-0 space-y-6">
-            <ColorPicker baseColor={baseColor} onChange={setBaseColor} />
-            <ExportPanel baseColor={baseColor} onCopy={showToast} />
+            <ColorPicker
+              colorScale={colorScales[0]}
+              onChange={(color) => handleColorChange(colorScales[0].id, color)}
+              onNameChange={(name) => handleNameChange(colorScales[0].id, name)}
+            />
+
+            {/* Generate Random Button */}
+            <button
+              onClick={() => handleGenerateRandom(colorScales[0].id)}
+              className="w-full py-3 px-4 bg-white border-2 border-neutral-200 rounded-xl font-medium text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
+            >
+              <svg
+                className="w-5 h-5 text-neutral-500 group-hover:rotate-180 transition-transform duration-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              Generate random
+            </button>
+
+            {/* Add Secondary Color Scale Button */}
+            <button
+              onClick={handleAddColorScale}
+              className="w-full py-3 px-4 bg-neutral-800 rounded-xl font-medium text-white hover:bg-neutral-700 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Add secondary color scale
+            </button>
+
+            <ExportPanel colorScales={colorScales} onCopy={showToast} />
           </aside>
 
           {/* Main Content */}
-          <div className="flex-1 space-y-10">
-            <Palette baseColor={baseColor} onCopy={showToast} />
-            <UIPreview baseColor={baseColor} />
+          <div className="flex-1 space-y-6">
+            {/* All Color Palettes */}
+            {colorScales.map((scale, index) => (
+              <Palette
+                key={scale.id}
+                colorScale={scale}
+                onCopy={showToast}
+                onColorChange={(color) => handleColorChange(scale.id, color)}
+                onNameChange={(name) => handleNameChange(scale.id, name)}
+                onGenerateRandom={() => handleGenerateRandom(scale.id)}
+                onRemove={
+                  colorScales.length > 1
+                    ? () => handleRemoveColorScale(scale.id)
+                    : undefined
+                }
+                showControls={index > 0}
+              />
+            ))}
+
+            <UIPreview baseColor={primaryScale.baseColor} />
           </div>
         </div>
       </div>
@@ -82,19 +224,27 @@ function App() {
 }
 
 function ColorPicker({
-  baseColor,
+  colorScale,
   onChange,
+  onNameChange,
 }: {
-  baseColor: string;
+  colorScale: ColorScale;
   onChange: (value: string) => void;
+  onNameChange: (name: string) => void;
 }) {
-  const [selectedColor, setSelectedColor] = useState(baseColor);
-  const [textColor, setTextColor] = useState(baseColor);
+  const [selectedColor, setSelectedColor] = useState(colorScale.baseColor);
+  const [textColor, setTextColor] = useState(colorScale.baseColor);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(colorScale.name);
 
   useEffect(() => {
-    setSelectedColor(baseColor);
-    setTextColor(baseColor);
-  }, [baseColor]);
+    setSelectedColor(colorScale.baseColor);
+    setTextColor(colorScale.baseColor);
+  }, [colorScale.baseColor]);
+
+  useEffect(() => {
+    setEditedName(colorScale.name);
+  }, [colorScale.name]);
 
   function handlePaste(ev: React.ClipboardEvent<HTMLInputElement>) {
     ev.preventDefault();
@@ -117,27 +267,68 @@ function ColorPicker({
   function handleTextChange(ev: React.ChangeEvent<HTMLInputElement>) {
     const color = ev.target.value;
     setTextColor(color);
-    if (isValidHexColor(color) && color !== baseColor) {
+    if (isValidHexColor(color) && color !== colorScale.baseColor) {
       const normalized = color.padStart(7, "#");
       setSelectedColor(normalized);
       onChange(normalized);
     }
   }
 
+  function handleNameSubmit() {
+    if (editedName.trim()) {
+      onNameChange(editedName.trim());
+    } else {
+      setEditedName(colorScale.name);
+    }
+    setIsEditingName(false);
+  }
+
+  const pickerId = `color-picker-${colorScale.id}`;
+
   return (
     <div className="p-5 bg-white rounded-2xl shadow-sm border border-neutral-200">
-      <label className="block text-sm font-medium text-neutral-600 mb-3">
-        Base Color
-      </label>
+      <div className="flex items-center justify-between mb-3">
+        {isEditingName ? (
+          <input
+            type="text"
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            onBlur={handleNameSubmit}
+            onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()}
+            className="text-sm font-medium text-neutral-600 bg-neutral-100 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-neutral-300"
+            autoFocus
+          />
+        ) : (
+          <button
+            onClick={() => setIsEditingName(true)}
+            className="text-sm font-medium text-neutral-600 hover:text-neutral-800 cursor-pointer flex items-center gap-1"
+          >
+            {colorScale.name}
+            <svg
+              className="w-3 h-3 opacity-50"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
       <div className="relative flex items-center gap-2">
         <label
-          htmlFor="color-picker"
+          htmlFor={pickerId}
           className="w-12 h-12 rounded-xl cursor-pointer shadow-inner border border-neutral-200 transition-transform hover:scale-105"
-          style={{ backgroundColor: baseColor }}
+          style={{ backgroundColor: colorScale.baseColor }}
         />
         <input
           type="color"
-          id="color-picker"
+          id={pickerId}
           value={selectedColor}
           className="sr-only"
           onChange={handleSelectedChange}
@@ -156,25 +347,34 @@ function ColorPicker({
 }
 
 function ExportPanel({
-  baseColor,
+  colorScales,
   onCopy,
 }: {
-  baseColor: string;
+  colorScales: ColorScale[];
   onCopy: (msg: string) => void;
 }) {
-  const colors = tailwindPalette(baseColor);
-  const colorName = getClosestColorName(baseColor)
-    .toLowerCase()
-    .replace(/\s+/g, "-");
   const tones = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
 
-  const tailwindConfig = `'${colorName}': {\n${tones
-    .map((tone, i) => `  ${tone}: '${colors[i]}'`)
-    .join(",\n")}\n}`;
+  // Generate config for all color scales
+  const tailwindConfig = colorScales
+    .map((scale) => {
+      const colors = tailwindPalette(scale.baseColor);
+      const colorName = scale.name.toLowerCase().replace(/\s+/g, "-");
+      return `'${colorName}': {\n${tones
+        .map((tone, i) => `  ${tone}: '${colors[i]}'`)
+        .join(",\n")}\n}`;
+    })
+    .join(",\n");
 
-  const cssVariables = tones
-    .map((tone, i) => `--color-${colorName}-${tone}: ${colors[i]};`)
-    .join("\n");
+  const cssVariables = colorScales
+    .map((scale) => {
+      const colors = tailwindPalette(scale.baseColor);
+      const colorName = scale.name.toLowerCase().replace(/\s+/g, "-");
+      return tones
+        .map((tone, i) => `--color-${colorName}-${tone}: ${colors[i]};`)
+        .join("\n");
+    })
+    .join("\n\n");
 
   const [activeTab, setActiveTab] = useState<"tailwind" | "css">("tailwind");
   const [isExpanded, setIsExpanded] = useState(true);
@@ -195,7 +395,10 @@ function ExportPanel({
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full p-5 flex items-center justify-between hover:bg-neutral-50 transition-colors cursor-pointer focus:outline-none"
       >
-        <h3 className="text-sm font-medium text-neutral-600">Export</h3>
+        <h3 className="text-sm font-medium text-neutral-600">
+          Export ({colorScales.length}{" "}
+          {colorScales.length === 1 ? "scale" : "scales"})
+        </h3>
         <svg
           className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${
             isExpanded ? "rotate-180" : ""
@@ -245,7 +448,7 @@ function ExportPanel({
               </button>
             </div>
           </div>
-          <pre className="p-4 bg-neutral-900 text-neutral-100 text-xs rounded-xl overflow-x-auto max-h-48 font-mono">
+          <pre className="p-4 bg-neutral-900 text-neutral-100 text-xs rounded-xl overflow-x-auto max-h-64 font-mono">
             {activeTab === "tailwind" ? tailwindConfig : cssVariables}
           </pre>
           <button
@@ -261,28 +464,147 @@ function ExportPanel({
 }
 
 function Palette({
-  baseColor,
+  colorScale,
   onCopy,
+  onColorChange,
+  onNameChange,
+  onGenerateRandom,
+  onRemove,
+  showControls,
 }: {
-  baseColor: string;
+  colorScale: ColorScale;
   onCopy: (msg: string) => void;
+  onColorChange: (color: string) => void;
+  onNameChange: (name: string) => void;
+  onGenerateRandom: () => void;
+  onRemove?: () => void;
+  showControls: boolean;
 }) {
   const tones = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
   const [colors, setColors] = useState<string[]>([]);
-  const [baseColorName, setBaseColorName] = useState(
-    getClosestColorName(baseColor)
-  );
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(colorScale.name);
 
   useEffect(() => {
-    setColors(tailwindPalette(baseColor));
-    setBaseColorName(getClosestColorName(baseColor));
-  }, [baseColor]);
+    setColors(tailwindPalette(colorScale.baseColor));
+  }, [colorScale.baseColor]);
+
+  useEffect(() => {
+    setEditedName(colorScale.name);
+  }, [colorScale.name]);
+
+  function handleNameSubmit() {
+    if (editedName.trim()) {
+      onNameChange(editedName.trim());
+    } else {
+      setEditedName(colorScale.name);
+    }
+    setIsEditingName(false);
+  }
+
+  const pickerId = `palette-picker-${colorScale.id}`;
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-neutral-200">
-      <h2 className="text-xl font-semibold text-neutral-800 mb-4">
-        {baseColorName}
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          {showControls && (
+            <>
+              <label
+                htmlFor={pickerId}
+                className="w-8 h-8 rounded-lg cursor-pointer shadow-inner border border-neutral-200 transition-transform hover:scale-105"
+                style={{ backgroundColor: colorScale.baseColor }}
+              />
+              <input
+                type="color"
+                id={pickerId}
+                value={colorScale.baseColor}
+                className="sr-only"
+                onChange={(e) => onColorChange(e.target.value)}
+              />
+            </>
+          )}
+          {isEditingName ? (
+            <input
+              type="text"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              onBlur={handleNameSubmit}
+              onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()}
+              className="text-xl font-semibold text-neutral-800 bg-neutral-100 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-neutral-300"
+              autoFocus
+            />
+          ) : (
+            <button
+              onClick={() => setIsEditingName(true)}
+              className="text-xl font-semibold text-neutral-800 hover:text-neutral-600 cursor-pointer flex items-center gap-2"
+            >
+              {colorScale.name}
+              <svg
+                className="w-4 h-4 opacity-40"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {showControls && (
+          <div className="flex items-center gap-2">
+            {/* Generate Random for this scale */}
+            <button
+              onClick={onGenerateRandom}
+              className="p-2 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-600 transition-colors cursor-pointer"
+              title="Generate random color"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+
+            {/* Remove this scale */}
+            {onRemove && (
+              <button
+                onClick={onRemove}
+                className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 transition-colors cursor-pointer"
+                title="Remove color scale"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+        )}
+      </div>
       <div className="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-6 xl:grid-cols-11 gap-1">
         {colors.map((color, index) => (
           <ColorSquare
