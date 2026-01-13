@@ -1,0 +1,8 @@
+# Ignore artifacts:
+.vscode
+node_modules
+public
+pnpm-lock.yaml
+pnpm-workspace.yaml
+.env
+*.md
