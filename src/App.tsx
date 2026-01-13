@@ -8,7 +8,7 @@ import ExportPanel from "@/components/export-panel"
 import Palette from "@/components/palette"
 import UIPreview from "@/components/ui-preview"
 
-function App() {
+function useApp() {
   const [colorScales, setColorScales] = useState<ColorScale[]>([createColorScale()])
   const [toast, setToast] = useState({ message: "", visible: false })
 
@@ -16,6 +16,12 @@ function App() {
     setToast({ message, visible: true })
     setTimeout(() => setToast((t) => ({ ...t, visible: false })), 2000)
   }, [])
+
+  return { colorScales, setColorScales, toast, showToast }
+}
+
+function App() {
+  const { colorScales, setColorScales, toast, showToast } = useApp()
 
   // Spacebar to generate random color for the first (primary) scale
   useEffect(() => {
