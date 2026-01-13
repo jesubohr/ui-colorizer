@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { tailwindPalette } from "@/palette-jesus"
+import { tailwindPalette } from "@/lib/palette"
 import type { ColorScale } from "@/types"
 
 export default function ExportPanel({ colorScales, onCopy }: { colorScales: ColorScale[]; onCopy: (msg: string) => void }) {

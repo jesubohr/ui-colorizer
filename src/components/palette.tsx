@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { tailwindPalette } from "@/palette-jesus"
+import { tailwindPalette } from "@/lib/palette"
 import ColorSquare from "./colors-square"
 import type { ColorScale } from "@/types"
 

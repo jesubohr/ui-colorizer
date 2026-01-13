@@ -1,4 +1,4 @@
-import { tailwindPalette } from "@/palette-jesus"
+import { tailwindPalette } from "@/lib/palette"
 
 export default function UIPreview({ baseColor }: { baseColor: string }) {
   const colors = tailwindPalette(baseColor)

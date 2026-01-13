@@ -1,31 +1,6 @@
-import { parse, formatHex, oklch, type Oklch } from "culori"
-import { rgbToHsl, hslToRgb, rgbToHex, hexToRgb, hexToHsl, hslToHex, hslDistance } from "./lib/utils"
-import { HSL_COLORS_BY_NAME } from "./lib/constants"
-
-// OKLCH-based palette generation for perceptually uniform lightness
-function hexToOklch(hex: string): Oklch {
-  const color = parse(hex)
-  return oklch(color) as Oklch
-}
-
-function oklchToHex(color: Oklch): string {
-  return formatHex(color) || "#000000"
-}
-
-// Target lightness values for Tailwind shades (OKLCH L ranges from 0 to 1)
-const TAILWIND_LIGHTNESS: Record<number, number> = {
-  50: 0.97,
-  100: 0.93,
-  200: 0.87,
-  300: 0.78,
-  400: 0.66,
-  500: 0.55,
-  600: 0.48,
-  700: 0.4,
-  800: 0.33,
-  900: 0.25,
-  950: 0.18,
-}
+import type { Oklch } from "culori"
+import { rgbToHsl, hslToRgb, rgbToHex, hexToRgb, hexToHsl, hslToHex, hexToOklch, oklchToHex, hslDistance } from "./utils"
+import { TAILWIND_LIGHTNESS, HSL_COLORS_BY_NAME } from "./constants"
 
 function normalizeRGB(r: number, g: number, b: number) {
   r = Math.floor(r * 65535.0 + 0.5)

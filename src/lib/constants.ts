@@ -1,11 +1,24 @@
 type HSL_NAME = [number[], string]
 
+// Target lightness values for Tailwind shades (OKLCH L ranges from 0 to 1)
+export const TAILWIND_LIGHTNESS: Record<number, number> = {
+  50: 0.97,
+  100: 0.93,
+  200: 0.87,
+  300: 0.78,
+  400: 0.66,
+  500: 0.55,
+  600: 0.48,
+  700: 0.4,
+  800: 0.33,
+  900: 0.25,
+  950: 0.18,
+}
+
 /**
- * List of all colors that have a known name
- *
- * The list goes like: [hsl_code, name]
+ * List of all colors that have a known name, like: [hsl_code, name]
  */
-export const HSL_COLORS_BY_NAME: HSL_NAME[] = [
+export const HSL_COLORS_BY_NAME = [
   [[0, 0, 0], "Black"],
   [[240, 100, 25.098039215686274], "Navy Blue"],
   [[240, 100, 39.21568627450981], "Dark Blue"],

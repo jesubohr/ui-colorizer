@@ -1,4 +1,4 @@
-import { contrastTone } from "@/palette-jesus"
+import { contrastTone } from "@/lib/palette"
 
 export default function ColorSquare({ tone, color, onCopy }: { tone: number; color: string; onCopy: (msg: string) => void }) {
   function copyColorHex() {

@@ -1,3 +1,4 @@
+import { parse, formatHex, oklch, type Oklch } from "culori"
 import type { ColorScale } from "@/types"
 
 // Helper: Convert RGB to HSL
@@ -153,6 +154,16 @@ export function hslToHex(h: number, s: number, l: number): string {
       .padStart(2, "0")
 
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
+
+// OKLCH-based palette generation for perceptually uniform lightness
+export function hexToOklch(hex: string): Oklch {
+  const color = parse(hex)
+  return oklch(color) as Oklch
+}
+
+export function oklchToHex(color: Oklch): string {
+  return formatHex(color) || "#000000"
 }
 
 type HSLColor = {
