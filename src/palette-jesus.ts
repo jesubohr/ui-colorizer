@@ -127,14 +127,27 @@ export function contrastTone(hexColor: string): string {
 }
 
 export function tailwindPalette(hexColor: string) {
-  const [h, s] = hexToHsl(hexColor);
   const levels = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
-  const levelToLight = (level: number) => 100 - Number(level / 10);
+  const baseOklch = hexToOklch(hexColor);
 
-  const colors = [];
-  for (let i = 0; i < 11; i++) {
-    colors.push(hslToHex(h, s, levelToLight(levels[i])));
-  }
+  // Generate palette using OKLCH for perceptually uniform lightness
+  const colors = levels.map((level) => {
+    const targetL = TAILWIND_LIGHTNESS[level];
+    // Adjust chroma slightly for very light/dark shades
+    let chromaMultiplier = 1;
+    if (level <= 100) chromaMultiplier = 0.6;
+    else if (level <= 200) chromaMultiplier = 0.8;
+    else if (level >= 900) chromaMultiplier = 0.7;
+    else if (level >= 800) chromaMultiplier = 0.85;
+
+    const newColor: Oklch = {
+      mode: "oklch",
+      l: targetL,
+      c: (baseOklch.c ?? 0.1) * chromaMultiplier,
+      h: baseOklch.h,
+    };
+    return oklchToHex(newColor);
+  });
 
   return colors;
 }
