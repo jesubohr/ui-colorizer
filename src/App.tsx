@@ -84,37 +84,39 @@ function App() {
               onNameChange={(name) => handleNameChange(colorScales[0].id, name)}
             />
 
-            {/* Generate Random Button */}
-            <button
-              onClick={() => handleGenerateRandom(colorScales[0].id)}
-              className="w-full py-3 px-4 bg-white border-2 border-neutral-200 rounded-xl font-medium text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
-            >
-              <svg
-                className="w-5 h-5 text-neutral-500 group-hover:rotate-180 transition-transform duration-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="space-y-2">
+              {/* Generate Random Button */}
+              <button
+                onClick={() => handleGenerateRandom(colorScales[0].id)}
+                className="w-full py-3 px-4 bg-white border-2 border-neutral-200 rounded-xl font-medium text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              Generate random
-            </button>
+                <svg
+                  className="w-5 h-5 text-neutral-500 group-hover:rotate-180 transition-transform duration-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                Generate random
+              </button>
 
-            {/* Add Secondary Color Scale Button */}
-            <button
-              onClick={handleAddColorScale}
-              className="w-full py-3 px-4 bg-neutral-800 rounded-xl font-medium text-white hover:bg-neutral-700 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add secondary color scale
-            </button>
+              {/* Add Extra Color Scale Button */}
+              <button
+                onClick={handleAddColorScale}
+                className="w-full py-3 px-4 bg-neutral-800 rounded-xl font-medium text-white hover:bg-neutral-700 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add extra color scale
+              </button>
+            </div>
 
             <ExportPanel colorScales={colorScales} onCopy={showToast} />
           </aside>
