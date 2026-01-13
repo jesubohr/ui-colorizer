@@ -1,9 +1,5 @@
 // Helper: Convert RGB to HSL
-export function rgbToHsl(
-  r: number,
-  g: number,
-  b: number
-): [number, number, number] {
+export function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   r /= 255
   g /= 255
   b /= 255
@@ -34,11 +30,7 @@ export function rgbToHsl(
 }
 
 // Helper: Convert HSL back to RGB
-export function hslToRgb(
-  h: number,
-  s: number,
-  l: number
-): [number, number, number] {
+export function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   h /= 360
 
   function hue2rgb(p: number, q: number, t: number): number {
@@ -185,11 +177,7 @@ export function hslDistance(hsl1: HSLColor, hsl2: HSLColor) {
   const satWeight = 1
   const lightWeight = 1
 
-  return Math.sqrt(
-    Math.pow(hueDiff * hueWeight, 2) +
-      Math.pow(hsl1.s - hsl2.s, 2) * satWeight +
-      Math.pow(hsl1.l - hsl2.l, 2) * lightWeight
-  )
+  return Math.sqrt(Math.pow(hueDiff * hueWeight, 2) + Math.pow(hsl1.s - hsl2.s, 2) * satWeight + Math.pow(hsl1.l - hsl2.l, 2) * lightWeight)
 }
 
 // Get Random color in HEX
