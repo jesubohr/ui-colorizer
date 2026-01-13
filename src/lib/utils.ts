@@ -1,3 +1,5 @@
+import type { ColorScale } from "@/types"
+
 // Helper: Convert RGB to HSL
 export function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   r /= 255
@@ -195,4 +197,19 @@ export function isValidHexColor(hexColor: string) {
 
   // Validate hex format
   return /^[0-9A-F]{6}$/.test(cleanHex)
+}
+
+// Helper to generate unique IDs
+function generateId(): string {
+  return Math.random().toString(36).substring(2, 9)
+}
+
+// Helper to create a new color scale
+export function createColorScale(baseColor?: string): ColorScale {
+  const color = baseColor || getRandomHexColor()
+  return {
+    id: generateId(),
+    name: "Primary",
+    baseColor: color,
+  }
 }
