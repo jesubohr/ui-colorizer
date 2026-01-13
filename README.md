@@ -1,54 +1,49 @@
-# React + TypeScript + Vite
+# UI Colors Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A professional-grade color palette generator inspired by [uicolors.app](https://uicolors.app/). This tool allows you to generate consistent, perceptually uniform color scales for Tailwind CSS using the OKLCH color space.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **OKLCH Color Scales**: Uses the modern OKLCH color space for perceptually accurate lightness across all hues.
+- **Instant Generation**: Press `Space` to generate a random base color instantly.
+- **Smart Color Matching**: Automatically detects the closest color name for your selection.
+- **Tailwind & CSS Export**: Easy-to-copy configuration for Tailwind CSS or CSS variables.
+- **Live UI Preview**: See how your colors look in real-world components (Buttons, Cards, Inputs, etc.).
+- **Collapsible Export Section**: Keep your workspace clean with a toggleable export panel.
+- **Contrast Tones**: Automatically calculates high-contrast text colors for every shade.
 
-## Expanding the ESLint configuration
+## 🚀 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **React 19**
+- **TypeScript**
+- **Vite**
+- **Tailwind CSS v4**
+- **Culori**: Used for professional color manipulation and OKLCH interpolation.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🛠️ Getting Started
+
+### Installation
+
+```bash
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+pnpm dev
 ```
+
+### Build
+
+```bash
+pnpm build
+```
+
+## 🎨 Why OKLCH?
+
+Unlike HSL, OKLCH provides **perceptual uniformity**. This means that two colors with the same "lightness" value (L) will actually look equally bright to the human eye, regardless of their hue. This is crucial for creating accessible and professional color palettes where the "500" shade of Blue feels just as bright as the "500" shade of Orange.
+
+---
+
+Built with ❤️ by [Antigravity](https://github.com/google-deepmind)
