@@ -13,6 +13,10 @@
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+@theme inline {
+  --breakpoint-xs: 540px;
+}
+
 :root {
   font-family: "Onest Variable", system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;

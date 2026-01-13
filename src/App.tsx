@@ -251,7 +251,7 @@ function Palette({
       <h2 className="text-xl font-semibold text-neutral-800 mb-4">
         {baseColorName}
       </h2>
-      <div className="grid grid-cols-11 gap-1">
+      <div className="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-6 xl:grid-cols-11 gap-1">
         {colors.map((color, index) => (
           <ColorSquare
             key={index}
@@ -286,13 +286,13 @@ function ColorSquare({
       style={{ backgroundColor: color }}
     >
       <span
-        className="text-[11px] font-semibold opacity-80 group-hover:opacity-100"
+        className="text-sm font-semibold opacity-80 group-hover:opacity-100"
         style={{ color: contrastTone(color) }}
       >
         {tone}
       </span>
       <span
-        className="text-[9px] uppercase opacity-60 group-hover:opacity-100 mb-1"
+        className="text-xs uppercase opacity-60 group-hover:opacity-100 mb-1"
         style={{ color: contrastTone(color) }}
       >
         {color.slice(1)}
